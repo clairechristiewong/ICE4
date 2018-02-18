@@ -1,0 +1,75 @@
+import java.util.*;
+
+public class GameDriver
+{
+   public static void main(String[] args)
+   {   
+      System.out.println("Game Start.");   
+      boolean gameOver = false;                    //used for while loop 
+      Missions game = new Missions();              //instanciate mission
+      int level = game.getLevel();                 //set level = 1, as per Game superclass
+      int dungeon = game.getCompletedDungeon();    //set dungeon = 1, as per Game superclass
+      
+//these variable are used to allow the user to restart the program again after they lose if they want
+      Scanner kb = new Scanner(System.in);
+      boolean done = false;
+      char ans;
+      
+//while loop to keep the game going until the game has ended
+      while (!gameOver)
+      {
+      
+//if statement changes the dungeon difficulty from easy(1) to medium(2) to hard(3) when complete and resets level      
+         if (level > 5)
+         {
+            game.setLevel(++dungeon);
+            level = 1;
+         }
+         game.setDifficulty(dungeon);       
+         gameOver = game.failRate();
+         
+//if statement shows the user their progress and if they successfully completed a specific level
+         if (!gameOver)
+         {
+            game.levelComplete(dungeon, level);
+            if (dungeon == 3 && level == 5)           //if statement lets the user know they beat the game       
+            {
+               System.out.println("Congratulations! You won!");
+               System.out.println("Completed Levels: " + ((dungeon - 1) * 5
+                                  + level));
+            }
+            game.setLevel(++level);
+         }
+         
+//else if statement used for when a level is failed and game ends
+         else if (gameOver)
+         {
+            game.levelFailed(dungeon, level);
+            ans = '0';
+            while(!done)                               //while loop used for user validation to allow user to play again
+            {
+               System.out.print("Would you like to try again?(y/n) ");
+               ans = kb.next().charAt(0);
+               if (ans == 'y')
+               {
+                  gameOver = false;
+                  done = true;
+               }
+               else if (ans == 'n')
+               {
+                  done = true;
+               }
+               else
+               {
+                  System.out.println("Invalid input.");
+               }
+            }
+            
+//reset variables if the user wants to play again
+            done = false;
+            level = 1;
+            dungeon = 1;
+         }
+      }
+   }
+}
